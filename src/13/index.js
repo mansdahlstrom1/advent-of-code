@@ -87,7 +87,48 @@ const comparePackets = (pair) => {
   }
 };
 
+const sortPackages = (a, b) => {
+  const value = comparePackets([b, a]);
+  console.log(value);
+  return value ? 1 : -1;
+};
+
+/**
+ * The distress signal protocol also requires that you include two additional divider packets:
+ *
+ * ```
+ * [[2]]
+ * [[6]]
+ * ```
+ *
+ * @param {*} pairs pairs of packets
+ * @returns a flat list of all packets
+ */
+const followDistressSignalProtocol = (pairs) => {
+  const flat = pairs.reduce((acc, val) => [...acc, ...val], []);
+
+  // push the new values in
+  flat.push([[2]]);
+  flat.push([[6]]);
+  return flat;
+};
+
+const findDecoderKey = (sortedList) => {
+  const indices = [];
+  sortedList.forEach((row, i) => {
+    const stringRow = JSON.stringify(row);
+    if (stringRow === '[[2]]' || stringRow === '[[6]]') {
+      indices.push(i + 1);
+    }
+  });
+
+  return indices.reduce((acc, val) => acc * val, 1);
+};
+
 module.exports = {
   getSumOfCorrectlyOrderedPackages,
+  sortPackages,
   comparePackets,
+  followDistressSignalProtocol,
+  findDecoderKey,
 };
