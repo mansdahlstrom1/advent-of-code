@@ -1,23 +1,31 @@
 {
   "name": "advent-of-code",
   "version": "1.0.0",
-  "description": "Advent of Code 2022",
+  "description": "Advent of Code",
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha 'src/**/*.test.js'",
-    "13": "node src/13/13.js"
+    "build": "tsc",
+    "2022:13": "ts-node 2022/13/src/main.ts",
+    "2022:13:debug": "DEBUG=true ts-node 2022/13/src/main.ts",
+    "2022:13:test": "ts-mocha '2022/13/src/*.test.ts'"
   },
   "author": "Måns Dahlström",
   "license": "ISC",
   "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/expect": "^24.3.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.3.1",
     "chai": "^4.3.7",
     "eslint": "^8.29.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
     "mocha": "^10.2.0",
-    "prettier": "^2.8.1"
+    "prettier": "^2.8.1",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
   }
 }

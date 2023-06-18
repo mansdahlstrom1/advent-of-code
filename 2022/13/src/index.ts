@@ -15,21 +15,22 @@
  * the result is then found by instead comparing [0,0,0] and [2].
  */
 
-const getSumOfCorrectlyOrderedPackages = (pairs) => {
+import { NestedPair, Pair } from "./types";
+import { log } from "./utils";
+
+export const getSumOfCorrectlyOrderedPackages = (pairs: Pair[]) => {
   let sum = 0;
 
   for (let [index, pair] of pairs.entries()) {
-    console.log(`==== PAIR ${index + 1} =====`);
     const value = comparePackets(pair);
     if (value) {
       sum += index + 1;
     }
-    console.log('\n');
   }
   return sum;
 };
 
-const comparePackets = (pair) => {
+export const comparePackets = (pair: Pair): boolean | undefined => {
   const [left, right] = pair;
 
   for (let [index, leftValue] of left.entries()) {
@@ -37,7 +38,7 @@ const comparePackets = (pair) => {
 
     /** If the right list runs out of items first, the inputs are not in the right order. */
     if (rightValue === undefined) {
-      console.log('Right side ran out of items, so inputs are not in the right order');
+      log('Right side ran out of items, so inputs are not in the right order');
       return false;
     }
     /** If both values are integers, compare Integers */
@@ -45,11 +46,11 @@ const comparePackets = (pair) => {
       if (leftValue === rightValue) continue;
 
       if (leftValue < rightValue) {
-        console.log('Left side is smaller, so inputs are in the right order');
+        log('Left side is smaller, so inputs are in the right order');
         return true;
       }
 
-      console.log('Right side is smaller, so inputs are not in the right order');
+      log('Right side is smaller, so inputs are not in the right order');
       return false;
     }
 
@@ -77,19 +78,18 @@ const comparePackets = (pair) => {
         return comparison;
       }
     }
-    console.log('end of the line');
+    log('end of the line');
   }
 
   /** If the left list runs out of items first, the inputs are in the right order. */
   if (left.length < right.length) {
-    console.log('Left side ran out of items, so inputs are in the right order');
+    log('Left side ran out of items, so inputs are in the right order');
     return true;
   }
 };
 
-const sortPackages = (a, b) => {
+export const sortPackages = (a: NestedPair, b: NestedPair) => {
   const value = comparePackets([b, a]);
-  console.log(value);
   return value ? 1 : -1;
 };
 
@@ -104,7 +104,7 @@ const sortPackages = (a, b) => {
  * @param {*} pairs pairs of packets
  * @returns a flat list of all packets
  */
-const followDistressSignalProtocol = (pairs) => {
+export const followDistressSignalProtocol = (pairs: Pair[]) => {
   const flat = pairs.reduce((acc, val) => [...acc, ...val], []);
 
   // push the new values in
@@ -113,8 +113,8 @@ const followDistressSignalProtocol = (pairs) => {
   return flat;
 };
 
-const findDecoderKey = (sortedList) => {
-  const indices = [];
+export const findDecoderKey = (sortedList: NestedPair): number => {
+  const indices: number[] = [];
   sortedList.forEach((row, i) => {
     const stringRow = JSON.stringify(row);
     if (stringRow === '[[2]]' || stringRow === '[[6]]') {
@@ -123,12 +123,4 @@ const findDecoderKey = (sortedList) => {
   });
 
   return indices.reduce((acc, val) => acc * val, 1);
-};
-
-module.exports = {
-  getSumOfCorrectlyOrderedPackages,
-  sortPackages,
-  comparePackets,
-  followDistressSignalProtocol,
-  findDecoderKey,
 };

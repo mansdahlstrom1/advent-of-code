@@ -1,9 +1,9 @@
-const { expect } = require('chai');
-const { describe, it } = require('mocha');
-const { comparePackets, sortPackages, followDistressSignalProtocol, findDecoderKey } = require('.');
-const { getPairs } = require('./utils');
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import { comparePackets, sortPackages, followDistressSignalProtocol, findDecoderKey } from '.';
+import { getPairs } from './utils';
 
-const pairs = getPairs('input/test.txt');
+const pairs = getPairs('../input/test.txt');
 
 describe('13', () => {
   it('Should handle Pair 1', () => {
