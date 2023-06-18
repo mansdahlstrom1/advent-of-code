@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "2019:2": "ts-node 2019/2/src/index.ts",
     "2022:13": "ts-node 2022/13/src/main.ts",
     "2022:13:debug": "DEBUG=true ts-node 2022/13/src/main.ts",
     "2022:13:test": "ts-mocha '2022/13/src/*.test.ts'"
