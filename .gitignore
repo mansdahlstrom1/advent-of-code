@@ -13,3 +13,5 @@ Cargo.lock
 **/*.rs.bk
 
 # End of .gitignore
+
+.vscode/settings.json
