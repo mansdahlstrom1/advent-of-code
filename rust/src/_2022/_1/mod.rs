@@ -13,6 +13,9 @@ pub fn day_1() {
     let total_calories_carried_by_the_elf_carrying_the_most_calories = elf_calories[0].1;
 
     println!("The total calories carried by the elf carrying the most calories is: {}", total_calories_carried_by_the_elf_carrying_the_most_calories);
+
+    let calories_carried_by_the_top_3_elves = elf_calories[0].1 + elf_calories[1].1 + elf_calories[2].1;
+    println!("The total calories carried by the top 3 elves is: {}", calories_carried_by_the_top_3_elves);
 }
 
 
