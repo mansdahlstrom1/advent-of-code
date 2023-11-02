@@ -1,12 +1,10 @@
-mod me;
-mod opponent;
-use self::me::Me;
-use self::opponent::Opponent;
+mod play;
+use self::play::Play;
 
 #[derive(Debug)]
 pub struct Round {
-  opponent: Opponent,
-  me: Me,
+  opponents_play: Play,
+  my_play: Play,
   score: Option<i32>,
 }
 
@@ -22,43 +20,56 @@ impl Round {
     }
   }
 
-  pub fn new(round: &str) -> Self {
-    let chars: Vec<&str> = round.split_whitespace().collect();
-    let opponent = chars[0];
-    let me = chars[1];
+  pub fn using_strategy_1(line: &str) -> Self {
+    let chars: Vec<&str> = line.split_whitespace().collect();
+    let opponents_play = Play::from_str(chars[0]);
+    let my_play = Play::from_str(chars[1]);
 
     Self {
-      opponent: Opponent::from_str(opponent),
-      me: Me::from_str(me),
+      opponents_play,
+      my_play,
       score: None,
     }
   }
 
-  pub fn calculate_score(&mut self) {
-    let game_score = match self.me {
-      Me::Rock => match self.opponent {
-        Opponent::Paper => 0,
-        Opponent::Rock => 3,
-        Opponent::Scissors => 6,
+  pub fn using_strategy_2(line: &str) -> Self {
+    let chars: Vec<&str> = line.split_whitespace().collect();
+    let opponents_play = Play::from_str(chars[0]);
+    let my_play = Play::based_on_opponents_play(chars[1], &opponents_play);
+
+    Self {
+      opponents_play,
+      my_play,
+      score: None,
+    }
+  }
+
+  pub fn calculate_score(&mut self) -> i32 {
+    let game_score = match self.my_play {
+      Play::Rock => match self.opponents_play {
+        Play::Paper => 0,
+        Play::Rock => 3,
+        Play::Scissors => 6,
       },
-      Me::Paper => match self.opponent {
-        Opponent::Scissors => 0,
-        Opponent::Paper => 3,
-        Opponent::Rock => 6,
+      Play::Paper => match self.opponents_play {
+        Play::Scissors => 0,
+        Play::Paper => 3,
+        Play::Rock => 6,
       },
-      Me::Scissors => match self.opponent {
-        Opponent::Rock => 0,
-        Opponent::Scissors => 3,
-        Opponent::Paper => 6,
+      Play::Scissors => match self.opponents_play {
+        Play::Rock => 0,
+        Play::Scissors => 3,
+        Play::Paper => 6,
       },
     };
 
-    let play_score = match self.me {
-      Me::Rock => 1,
-      Me::Paper => 2,
-      Me::Scissors => 3,
+    let play_score = match self.my_play {
+      Play::Rock => 1,
+      Play::Paper => 2,
+      Play::Scissors => 3,
     };
 
     self.set_score(game_score + play_score);
+    self.get_score()
   }
 }
