@@ -1,11 +1,25 @@
-mod utils;
+use aoc::_2022::{_1::day_1, _2::day_2};
+use clap::Parser;
 
-mod _2022 {
-  pub mod _1;
-  pub mod _2;
+/// Search for a pattern in a file and display the lines that contain it.
+#[derive(Parser)]
+struct Cli {
+  #[arg(short, long)]
+  year: i32,
+
+  #[arg(short, long)]
+  day: u8,
 }
 
 fn main() {
-  _2022::_1::day_1();
-  _2022::_2::day_2();
+  let args = Cli::parse();
+
+  match args.year {
+    2022 => match args.day {
+      1 => day_1(),
+      2 => day_2(),
+      _ => println!("Invalid day: {}", args.day),
+    },
+    _ => println!("Invalid year: {}", args.year),
+  }
 }

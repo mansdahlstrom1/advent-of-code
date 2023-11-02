@@ -11,7 +11,6 @@ struct Score {
 
 pub fn day_2() {
   let input = get_input_file("./src/_2022/_2/input.txt");
-  println!("input: {:?}", input);
 
   let mut score = Score {
     strategy_1: 0,
