@@ -1,4 +1,4 @@
-use aoc::_2022::{_1::day_1, _2::day_2};
+use aoc::_2022::{day1::day_1, day2::day_2};
 use clap::Parser;
 
 /// Search for a pattern in a file and display the lines that contain it.
