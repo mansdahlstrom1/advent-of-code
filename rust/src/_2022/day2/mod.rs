@@ -32,14 +32,3 @@ pub fn day_2() {
   println!("Final score using strategy 1: {}", score.strategy_1);
   println!("Final score using strategy 2: {}", score.strategy_2);
 }
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-  use test::Bencher;
-
-  #[bench]
-  fn bench_day_2(b: &mut Bencher) {
-    b.iter(day_2);
-  }
-}
