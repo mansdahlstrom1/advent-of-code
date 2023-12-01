@@ -1,10 +1,10 @@
 use crate::utils;
 
-pub fn day_1() {
+pub fn main() {
   println!("Hello, 2022 day 1!");
 
   // Read input.txt file
-  let input = utils::get_input_file("./src/_2022/_1/input.txt");
+  let input = utils::get_input_file("./src/_2022/day1/input.txt");
   // Split the input and parse it
   let mut elf_calories = calculate_elf_calories(&input);
   // Sort the array by calories

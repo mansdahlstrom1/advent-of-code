@@ -1,7 +1,4 @@
-use aoc::{
-  utils::create_day,
-  _2022::{day1::day_1, day2::day_2},
-};
+use aoc::{utils, _2022, _2023};
 use clap::Parser;
 use std::env;
 
@@ -30,14 +27,18 @@ async fn main() {
       std::process::exit(1);
     }
 
-    create_day(args.year, args.day).await;
+    utils::create_day(args.year, args.day).await;
     return;
   }
 
   match args.year {
     2022 => match args.day {
-      1 => day_1(),
-      2 => day_2(),
+      1 => _2022::day1::main(),
+      2 => _2022::day2::main(),
+      _ => println!("Invalid day: {}", args.day),
+    },
+    2023 => match args.day {
+      1 => _2023::day1::main(),
       _ => println!("Invalid day: {}", args.day),
     },
     _ => println!("Invalid year: {}", args.year),

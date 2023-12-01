@@ -9,8 +9,8 @@ struct Score {
   strategy_2: i32,
 }
 
-pub fn day_2() {
-  let input = get_input_file("./src/_2022/_2/input.txt");
+pub fn main() {
+  let input = get_input_file("./src/_2022/day2/input.txt");
 
   let mut score = Score {
     strategy_1: 0,
