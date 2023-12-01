@@ -10,3 +10,5 @@ Cargo.lock
 **/*.rs.bk
 
 # End of .gitignore
+
+env.sh

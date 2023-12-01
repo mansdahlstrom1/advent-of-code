@@ -1,6 +1,4 @@
-#![feature(test)]
-
-extern crate test;
+pub mod constants;
 pub mod utils;
 
 pub mod _2022 {
