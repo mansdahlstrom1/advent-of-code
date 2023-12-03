@@ -20,6 +20,11 @@ pub fn exit_with_message(message: &str) -> ! {
   std::process::exit(1);
 }
 
+pub fn get_i32_from_string(string: &str) -> i32 {
+  let numeric_string: String = string.chars().filter(|c| c.is_ascii_digit()).collect();
+  numeric_string.parse::<i32>().unwrap()
+}
+
 pub async fn create_day(year: i32, day: u8) {
   println!("Creating new day {} for year {}", day, year);
   let path = format!("src/_{}/day{}", year, day);
