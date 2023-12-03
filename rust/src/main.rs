@@ -40,6 +40,7 @@ async fn main() {
     2023 => match args.day {
       1 => _2023::day1::main(),
       2 => _2023::day2::main(),
+      3 => _2023::day3::main(),
       _ => println!("Invalid day: {}", args.day),
     },
     _ => println!("Invalid year: {}", args.year),
