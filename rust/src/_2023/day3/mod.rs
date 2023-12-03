@@ -77,13 +77,8 @@ fn find_part_number(converted_lines: &[Vec<String>], line_index: usize, index: u
     for point in line.iter().take(index + 2).skip(index - 1) {
       let part_number: Result<i32, std::num::ParseIntError> = point.parse::<i32>();
       if let Ok(part_number) = part_number {
+        // Keep track of duplicates since we've duplicated the numbers in convert_to_array
         if found_part_numbers.contains(&(current_line_index, part_number)) {
-          println!(
-            "{}: Found duplicate part number: {} ({})",
-            line_index + 1,
-            part_number,
-            index,
-          );
           continue;
         }
         found_part_numbers.push((current_line_index, part_number));
@@ -91,11 +86,7 @@ fn find_part_number(converted_lines: &[Vec<String>], line_index: usize, index: u
     }
   }
 
-  println!(
-    "{}: adjacent part numbers: {:?}",
-    line_index + 1,
-    found_part_numbers
-  );
+  println!("{}: part_numbers {:?}", line_index + 1, found_part_numbers);
 
   found_part_numbers
     .iter()
