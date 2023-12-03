@@ -1,5 +1,4 @@
 use reqwest::Error;
-use std::path::Path;
 use std::{env, fs};
 
 use crate::constants;
@@ -24,10 +23,6 @@ pub fn exit_with_message(message: &str) -> ! {
 pub async fn create_day(year: i32, day: u8) {
   println!("Creating new day {} for year {}", day, year);
   let path = format!("src/_{}/day{}", year, day);
-
-  if Path::new(&path).exists() {
-    exit_with_message(&format!("Day {} {} has already been generated", day, year));
-  }
 
   let response = download_input_file(year, day).await;
   let input = match response {
@@ -57,12 +52,6 @@ pub async fn create_day(year: i32, day: u8) {
   match create_input {
     Ok(_) => println!("Created input.txt"),
     Err(error) => exit_with_message(&format!("Error creating input.txt: {}", error)),
-  }
-
-  let create_mod = fs::write(format!("{}/mod.rs", path), "use crate::utils;");
-  match create_mod {
-    Ok(_) => println!("Created mod.rs"),
-    Err(error) => exit_with_message(&format!("Error creating mod.rs: {}", error)),
   }
 }
 
