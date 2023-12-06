@@ -11,7 +11,6 @@ pub fn main() {
 }
 
 pub fn pt1(input: &str) -> i32 {
-  println!("Hello, pt1!");
   let mut sum = 0;
   let lines: Vec<&str> = input.split('\n').collect();
 
@@ -36,7 +35,6 @@ pub fn pt1(input: &str) -> i32 {
 }
 
 pub fn pt2(input: &str) -> i32 {
-  println!("Hello, pt2!");
   let mut sum = 0;
   let lines: Vec<&str> = input.split('\n').collect();
 
@@ -70,7 +68,7 @@ fn convert_to_array(line: &str) -> Vec<String> {
   let array = line.chars().collect::<Vec<char>>();
   let matches: Vec<_> = re.find_iter(line).collect();
 
-  let vec: Vec<String> = array
+  array
     .iter()
     .enumerate()
     .map(|(i, char)| {
@@ -82,10 +80,7 @@ fn convert_to_array(line: &str) -> Vec<String> {
       }
       return_string
     })
-    .collect();
-
-  println!("vec: {:?}, length: {}", vec, vec.len());
-  vec
+    .collect()
 }
 
 fn get_grid(converted_lines: &[Vec<String>], line_index: usize, index: usize) -> Vec<Vec<&String>> {
