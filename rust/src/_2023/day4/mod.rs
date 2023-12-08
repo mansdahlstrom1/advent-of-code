@@ -88,7 +88,7 @@ fn duplicated_copies(
   let matches_cards = [matched_cards, unmatched_cards].concat();
 
   if !new_copies.is_empty() {
-    println!("Running next itteration...");
+    println!("Running next iteration...");
     duplicated_copies(original_list, matches_cards, new_copies)
   } else {
     [matches_cards, new_copies].concat()
