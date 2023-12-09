@@ -44,6 +44,7 @@ async fn main() {
       4 => _2023::day4::main(),
       5 => _2023::day5::main(),
       6 => _2023::day6::main(),
+      7 => _2023::day7::main(),
       _ => println!("Invalid day: {}", args.day),
     },
     _ => println!("Invalid year: {}", args.year),
