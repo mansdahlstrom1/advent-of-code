@@ -75,33 +75,33 @@ impl Almanac {
   }
 
   pub fn get_location_by_seed(&self, seed: i64) -> i64 {
-    // println!("Seed: {}", seed);
+    println!("Seed: {}", seed);
 
     let soil_location = self.get_destination_by_source(seed, &self.seed_to_soil_map);
-    // println!("soil_location: {}", soil_location);
+    println!("soil_location: {}", soil_location);
 
     let fertilizer_location =
       self.get_destination_by_source(soil_location, &self.soil_to_fertilizer_map);
-    // println!("fertilizer_location: {}", fertilizer_location);
+    println!("fertilizer_location: {}", fertilizer_location);
 
     let water_location =
       self.get_destination_by_source(fertilizer_location, &self.fertilizer_to_water_map);
-    // println!("water_location: {}", water_location);
+    println!("water_location: {}", water_location);
 
     let light_location = self.get_destination_by_source(water_location, &self.water_to_light_map);
-    // println!("light_location: {}", light_location);
+    println!("light_location: {}", light_location);
 
     let temperature_location =
       self.get_destination_by_source(light_location, &self.light_to_temperature_map);
-    // println!("temperature_location: {}", temperature_location);
+    println!("temperature_location: {}", temperature_location);
 
     let humidity_location =
       self.get_destination_by_source(temperature_location, &self.temperature_to_humidity_map);
-    // println!("humidity_location: {}", humidity_location);
+    println!("humidity_location: {}", humidity_location);
 
     let location =
       self.get_destination_by_source(humidity_location, &self.humidity_to_location_map);
-    // println!("location: {}", location);
+    println!("location: {}", location);
 
     location
   }
