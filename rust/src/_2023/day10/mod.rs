@@ -1,21 +1,8 @@
-use std::collections::HashMap;
+use std::{cmp, collections::HashMap};
 
 use crate::utils::{self, exit_with_message};
 
-/**
- * | is a vertical pipe connecting north and south.
- * - is a horizontal pipe connecting east and west.
- * L is a 90-degree bend connecting north and east.
- * J is a 90-degree bend connecting north and west.
- * 7 is a 90-degree bend connecting south and west.
- * F is a 90-degree bend connecting south and east.
- * . is ground; there is no pipe in this tile.
- * S is the starting position of the animal; there is a pipe on this tile, but your sketch doesn't show what shape the pipe has.
- */
-
 // Direction east, west, north, south
-// scan 3x3
-
 //  - L | F 7
 //  7 S - 7 |
 //  L | 7 | |
@@ -54,62 +41,40 @@ struct Cord {
  */
 fn match_symbol(direction: &Direction, symbol: char) -> Direction {
   match direction {
-    Direction::East => {
-      if symbol == '-' {
-        return Direction::East;
-      }
-      if symbol == 'J' {
-        return Direction::North;
-      }
-      if symbol == '7' {
-        return Direction::South;
-      }
-    }
-    Direction::West => {
-      if symbol == '-' {
-        return Direction::West;
-      }
-      if symbol == 'L' {
-        return Direction::North;
-      }
-      if symbol == 'F' {
-        return Direction::South;
-      }
-    }
-    Direction::North => {
-      if symbol == '|' {
-        return Direction::North;
-      }
-      if symbol == 'F' {
-        return Direction::East;
-      }
-
-      if symbol == '7' {
-        return Direction::West;
-      }
-    }
-    Direction::South => {
-      if symbol == '|' {
-        return Direction::South;
-      }
-      if symbol == 'J' {
-        return Direction::West;
-      }
-      if symbol == 'L' {
-        return Direction::East;
-      }
-    }
+    Direction::East => match symbol {
+      '-' => Direction::East,
+      'J' => Direction::North,
+      '7' => Direction::South,
+      _ => Direction::None,
+    },
+    Direction::West => match symbol {
+      '-' => Direction::West,
+      'L' => Direction::North,
+      'F' => Direction::South,
+      _ => Direction::None,
+    },
+    Direction::North => match symbol {
+      '|' => Direction::North,
+      'F' => Direction::East,
+      '7' => Direction::West,
+      _ => Direction::None,
+    },
+    Direction::South => match symbol {
+      '|' => Direction::South,
+      'J' => Direction::West,
+      'L' => Direction::East,
+      _ => Direction::None,
+    },
     Direction::None => exit_with_message("Got Direction None, something has gone wrong..."),
   }
-
-  Direction::None
 }
 
-fn follow_pipe(map: &Vec<Vec<char>>, direction: &Direction, cord: &Cord) -> (bool, i32) {
+fn follow_pipe(map: &Vec<Vec<char>>, direction: &Direction, cord: &Cord) -> (bool, i32, Vec<Cord>) {
   let mut x = cord.x;
   let mut y = cord.y;
   let mut steps = 0;
   let mut current_direction = *direction;
+  let mut visited = Vec::<Cord>::new();
 
   loop {
     // Make sure we are not out of bounds.
@@ -122,7 +87,7 @@ fn follow_pipe(map: &Vec<Vec<char>>, direction: &Direction, cord: &Cord) -> (boo
         "Out of bounds at x:{}, y:{}, direction: {:?}",
         x, y, current_direction
       );
-      return (false, steps);
+      return (false, steps, visited);
     }
 
     match current_direction {
@@ -134,14 +99,14 @@ fn follow_pipe(map: &Vec<Vec<char>>, direction: &Direction, cord: &Cord) -> (boo
     }
 
     steps += 1;
-
     let symbol = map[y][x];
+    visited.push(Cord { x, y });
     println!("Moving to x:{}, y:{}, symbol is: {}", x, y, symbol);
 
     // If we are back to the starting spot = S, then we have completed a loop.
     if symbol == 'S' {
       println!("Loop completed at x:{}, y:{} after {} steps", x, y, steps);
-      return (true, steps);
+      return (true, steps, visited);
     }
 
     let new_direction = match_symbol(&current_direction, symbol);
@@ -150,7 +115,7 @@ fn follow_pipe(map: &Vec<Vec<char>>, direction: &Direction, cord: &Cord) -> (boo
     // Break if the next symbol is a dead end.
     if new_direction == Direction::None {
       println!("Dead end at x:{}, y:{}", x, y);
-      return (false, steps);
+      return (false, steps, visited);
     }
 
     current_direction = new_direction;
@@ -201,7 +166,7 @@ fn pt1(input: &str) -> i32 {
   let map: Vec<Vec<char>> = get_map(input);
   let starting_cords = find_starting_cords(&map);
 
-  let mut results = HashMap::<Direction, (bool, i32)>::new();
+  let mut results: HashMap<Direction, (bool, i32)> = HashMap::<Direction, (bool, i32)>::new();
 
   println!("Starting map {:#?}", input);
   println!("Starting cords {:?}", starting_cords);
@@ -213,7 +178,7 @@ fn pt1(input: &str) -> i32 {
   ] {
     println!("Starting direction {:?}", direction);
     let res = follow_pipe(&map, &direction, &starting_cords);
-    results.insert(direction, res);
+    results.insert(direction, (res.0, res.1));
   }
 
   println!("{:#?}", results);
@@ -230,8 +195,33 @@ fn pt1(input: &str) -> i32 {
 fn pt2(input: &str) -> i32 {
   let map: Vec<Vec<char>> = get_map(input);
   let starting_cords = find_starting_cords(&map);
+  let mut results = HashMap::<Direction, (bool, i32, Vec<Cord>)>::new();
+
   println!("Starting map {:#?}", input);
   println!("Starting cords {:?}", starting_cords);
+  for direction in [
+    Direction::East,
+    Direction::West,
+    Direction::North,
+    Direction::South,
+  ] {
+    println!("Starting direction {:?}", direction);
+    let res = follow_pipe(&map, &direction, &starting_cords);
+    results.insert(direction, res);
+  }
+
+  println!("{:#?}", results);
+
+  for (_, (is_complete, steps, mut visited)) in results {
+    if is_complete {
+      println!("Visited {:#?}", visited);
+      visited.sort_by(|a, b| a.y.cmp(&b.y));
+      visited.iter().for_each(|cord| {
+        println!("Cord x:{}, y:{}", cord.x, cord.y);
+      });
+      return 0;
+    }
+  }
 
   0
 }
@@ -253,7 +243,13 @@ mod tests {
 
   #[test]
   fn test_pt2() {
-    let input = utils::get_input_file("src/_2023/day10/example.txt");
-    assert_eq!(pt2(&input), 0);
+    let input_3 = utils::get_input_file("src/_2023/day10/example_3.txt");
+    assert_eq!(pt2(&input_3), 4);
+
+    let input_4 = utils::get_input_file("src/_2023/day10/example_4.txt");
+    assert_eq!(pt2(&input_4), 8);
+
+    let input_5 = utils::get_input_file("src/_2023/day10/example_5.txt");
+    assert_eq!(pt2(&input_5), 10);
   }
 }
