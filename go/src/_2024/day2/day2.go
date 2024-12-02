@@ -34,24 +34,9 @@ func part1(reports [][]int) int {
 				continue
 			}
 
-			if utils.Abs(prevLevel-level) > 3 {
-				fmt.Printf("Not safe because difference between %d and %d is greater the 3\n", prevLevel, level)
-				isSafe = false
+			isSafe = checkSafety(prevLevel, level, isIncreasing)
+			if !isSafe {
 				break
-			}
-
-			if isIncreasing {
-				if level <= prevLevel {
-					fmt.Printf("Not safe because not increasing anymore, %d => %d\n", prevLevel, level)
-					isSafe = false
-					break
-				}
-			} else {
-				if level >= prevLevel {
-					fmt.Printf("Not safe because not decreasing anymore, %d => %d\n", prevLevel, level)
-					isSafe = false
-					break
-				}
 			}
 
 			prevLevel = level
@@ -62,6 +47,24 @@ func part1(reports [][]int) int {
 		}
 	}
 	return numberOfSafeReports
+}
+
+func checkSafety(prevLevel, level int, isIncreasing bool) bool {
+	if utils.Abs(prevLevel-level) > 3 {
+		return false
+	}
+
+	if isIncreasing {
+		if level <= prevLevel {
+			return false
+		}
+	} else {
+		if level >= prevLevel {
+			return false
+		}
+	}
+
+	return true
 }
 
 func parseInput(filename string) [][]int {
