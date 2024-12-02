@@ -3,19 +3,24 @@ package main
 import (
 	"flag"
 
+	"github.com/mansdahlstrom1/advent-of-code/go/src/utils"
 	year2024_day1 "github.com/mansdahlstrom1/advent-of-code/go/src/year2024/day1"
 	year2024_day2 "github.com/mansdahlstrom1/advent-of-code/go/src/year2024/day2"
 )
 
 var day int
+var debug bool
 
 func init() {
 	flag.IntVar(&day, "day", 0, "Please provide a valid day")
+	flag.BoolVar(&debug, "debug", false, "Enable Debug logs")
 }
 
 func main() {
 	flag.Parse()
 	println("Advent of Code 2024", day)
+
+	utils.Debug = debug
 
 	switch day {
 	case 1:
