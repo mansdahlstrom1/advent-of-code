@@ -1,4 +1,4 @@
-package _2024
+package _2024_day1
 
 import (
 	"fmt"
@@ -25,7 +25,6 @@ func Day1() {
 		part1(filename, left, right)
 		part2(filename, left, right)
 	}
-
 }
 
 func part1(filename string, left []int, right []int) {
