@@ -27,7 +27,7 @@ func part1(reports [][]int) int {
 	var numberOfSafeReports int = 0
 
 	for _, report := range reports {
-		isSafe := checkReportSafety(report, 0)
+		isSafe := checkReportSafety(report, 0, 0)
 		if isSafe {
 			numberOfSafeReports++
 		}
@@ -39,7 +39,7 @@ func part2(reports [][]int) int {
 	var numberOfSafeReports int = 0
 
 	for _, report := range reports {
-		isSafe := checkReportSafety(report, 1)
+		isSafe := checkReportSafety(report, 0, 1)
 		if isSafe {
 			numberOfSafeReports++
 		}
@@ -68,17 +68,16 @@ func getIsIncreasing(report []int) bool {
 	return increaseCount >= decreaseCount
 }
 
-func checkReportSafety(report []int, retryLimit int) bool {
-	fmt.Println("Checking report safety ", report)
+func checkReportSafety(report []int, retries int, retryLimit int) bool {
+	fmt.Println("Checking report safety", report)
 	var isIncreasing bool = getIsIncreasing(report)
-	var retries int = 0
 	isSafe, levelIndex := checkLevelSafety(report, isIncreasing)
 
 	if isSafe {
-		return isSafe
+		return true
 	}
 
-	// If not retries are allowed, return false
+	// If there are no retries left, return false
 	if retries+1 > retryLimit {
 		fmt.Println("Check failed... No retries left... returning false")
 		return isSafe
@@ -90,8 +89,8 @@ func checkReportSafety(report []int, retryLimit int) bool {
 	updatedReport1 := utils.DeleteElementAtIndex(report, levelIndex)
 	updatedReport2 := utils.DeleteElementAtIndex(report, levelIndex+1)
 
-	array1Result := checkReportSafety(updatedReport1, retryLimit-1)
-	array2Result := checkReportSafety(updatedReport2, retryLimit-1)
+	array1Result := checkReportSafety(updatedReport1, retries+1, retryLimit)
+	array2Result := checkReportSafety(updatedReport2, retries+1, retryLimit)
 
 	// If any of the arrays are safe, return true
 	return array1Result || array2Result
