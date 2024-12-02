@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func ReadFile(packageName string, day string, filename string) string {
@@ -11,7 +13,9 @@ func ReadFile(packageName string, day string, filename string) string {
 		panic(err)
 	}
 
-	filePath := filepath.Join(cwd, "src", packageName, day, filename)
+	// UGly hack, fix in upcoming day
+	section := strings.Split(cwd, "advent-of-code/go")
+	filePath := filepath.Join(section[0], "advent-of-code/go", "src", packageName, day, filename)
 	text, err := os.ReadFile(filePath)
 	if err != nil {
 		panic(err)
@@ -32,4 +36,12 @@ func DeleteElementAtIndex(slice []int, index int) []int {
 	newSlice := make([]int, len(slice))
 	copy(newSlice, slice)
 	return append(newSlice[:index], newSlice[index+1:]...)
+}
+
+var Debug = true // Set to false to suppress logs
+
+func Log(args ...interface{}) {
+	if Debug {
+		fmt.Println(args...)
+	}
 }

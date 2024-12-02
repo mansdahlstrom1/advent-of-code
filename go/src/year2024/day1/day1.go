@@ -1,4 +1,4 @@
-package _2024_day1
+package year2024_day1
 
 import (
 	"fmt"
@@ -53,7 +53,7 @@ func part2(filename string, left []int, right []int) {
 }
 
 func parseInput(filename string) ([]int, []int) {
-	var text = utils.ReadFile("_2024", "day1", filename)
+	var text = utils.ReadFile("year2024", "day1", filename)
 	rows := strings.Split(text, "\n")
 
 	var left []int
