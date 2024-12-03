@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -44,4 +45,12 @@ func Log(args ...interface{}) {
 	if Debug {
 		fmt.Println(args...)
 	}
+}
+
+func ParseInt(numberAsString string) int {
+	n, err := strconv.Atoi(numberAsString)
+	if err != nil {
+		panic(err)
+	}
+	return n
 }
