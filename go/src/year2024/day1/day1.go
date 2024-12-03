@@ -3,7 +3,6 @@ package year2024_day1
 import (
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/mansdahlstrom1/advent-of-code/go/src/utils"
@@ -64,18 +63,8 @@ func parseInput(filename string) ([]int, []int) {
 		}
 
 		locationIds := strings.Split(row, "   ")
-
-		val, err := strconv.Atoi(locationIds[0])
-		if err != nil {
-			panic(err)
-		}
-		left = append(left, val)
-
-		val, err = strconv.Atoi(locationIds[1])
-		if err != nil {
-			panic(err)
-		}
-		right = append(right, val)
+		left = append(left, utils.ParseInt(locationIds[0]))
+		right = append(right, utils.ParseInt(locationIds[1]))
 	}
 
 	return left, right

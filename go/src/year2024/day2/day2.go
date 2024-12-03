@@ -1,7 +1,6 @@
 package year2024_day2
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/mansdahlstrom1/advent-of-code/go/src/utils"
@@ -131,11 +130,7 @@ func parseInput(filename string) [][]int {
 		levels := strings.Split(row, " ")
 		integers := make([]int, len(levels))
 		for levelIndex, level := range levels {
-			n, err := strconv.Atoi(level)
-			if err != nil {
-				panic(err)
-			}
-			integers[levelIndex] = n
+			integers[levelIndex] = utils.ParseInt(level)
 		}
 		reports[rowIndex] = integers
 	}
