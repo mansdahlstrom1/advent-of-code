@@ -7,6 +7,7 @@ import (
 	year2024_day1 "github.com/mansdahlstrom1/advent-of-code/go/src/year2024/day1"
 	year2024_day2 "github.com/mansdahlstrom1/advent-of-code/go/src/year2024/day2"
 	year2024_day3 "github.com/mansdahlstrom1/advent-of-code/go/src/year2024/day3"
+	year2024_day4 "github.com/mansdahlstrom1/advent-of-code/go/src/year2024/day4"
 )
 
 var day int
@@ -30,6 +31,8 @@ func main() {
 		year2024_day2.Day2()
 	case 3:
 		year2024_day3.Day3()
+	case 4:
+		year2024_day4.Day4()
 	default:
 		println("Please provide a valid day")
 	}
