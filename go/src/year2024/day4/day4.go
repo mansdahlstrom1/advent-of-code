@@ -15,11 +15,14 @@ func Day4() {
 
 	// Remove the last empty row due to line break at end of file
 	rows = rows[:len(rows)-1]
-	part1(rows)
-	part2(rows)
+	numberOfXmas := part1(rows)
+	fmt.Println("Part 1 - Total XMAS: ", numberOfXmas)
+
+	numberOfMasAsX := part2(rows)
+	fmt.Println("Part 2 - Total XMAS: ", numberOfMasAsX)
 }
 
-func part1(rows []string) {
+func part1(rows []string) int {
 	var rowsWithXMAS = 0
 	for _, row := range rows {
 		rowsWithXMAS += strings.Count(row, "XMAS")
@@ -82,16 +85,14 @@ func part1(rows []string) {
 	utils.Log("Columns rows with XMAS: ", columnsWithXMAS)
 	utils.Log("diagonals with XMAS: ", diagonalsWithXMAS)
 
-	fmt.Println("Total XMAS: ", rowsWithXMAS+columnsWithXMAS+diagonalsWithXMAS)
+	// 2454
+	return rowsWithXMAS + columnsWithXMAS + diagonalsWithXMAS
 }
 
-func part2(rows []string) {
+func part2(rows []string) int {
 	var maxColumnIndex = len(rows) - 1
-	// utils.Log("Max column Index: ", maxColumnIndex)
 	var maxRowIndex = len(rows[0]) - 1
-	// utils.Log("Max row Index: ", maxRowIndex)
-
-	var numberOfX_mas_s = 0
+	var numberOfMasAsX = 0
 	for y, row := range rows {
 		for x, char := range row {
 			if char != 'A' {
@@ -107,24 +108,36 @@ func part2(rows []string) {
 				continue
 			}
 
-			utils.Log("Checking for MAS at: ", x, y)
+			utils.Log("Checking for X of MAS at: ", x, y)
 
-			topLeftChar := rune(rows[y-1][x-1])
-			var matchBottomRight = (topLeftChar == 'M' && checkDirection(rows, x-1, y-1, BottomRight, "AS")) ||
-				(topLeftChar == 'S' && checkDirection(rows, x-1, y-1, BottomRight, "AM"))
-
+			// 1. top right / bottom left
 			bottomLeftChar := rune(rows[y+1][x-1])
-			var matchTopRight = (bottomLeftChar == 'M' && checkDirection(rows, x-1, y+1, TopRight, "AS")) ||
-				(bottomLeftChar == 'S' && checkDirection(rows, x-1, y+1, TopRight, "AM"))
+			matchTopRight := bottomLeftChar == 'M' && checkDirection(rows, x-1, y+1, TopRight, "AS")
+			topRightChar := rune(rows[y-1][x+1])
+			matchBottomLeft := topRightChar == 'M' && checkDirection(rows, x+1, y-1, BottomLeft, "AS")
 
-			if matchBottomRight && matchTopRight {
-				fmt.Println("Found A going MAS at: ", x, y)
-				numberOfX_mas_s++
+			if !matchTopRight && !matchBottomLeft {
+				continue
 			}
+
+			// 2. top left / bottom right
+			topLeftChar := rune(rows[y-1][x-1])
+			matchBottomRight := topLeftChar == 'M' && checkDirection(rows, x-1, y-1, BottomRight, "AS")
+			bottomRightChar := rune(rows[y+1][x+1])
+			matchTopLeft := bottomRightChar == 'M' && checkDirection(rows, x+1, y+1, TopLeft, "AS")
+
+			if !matchBottomRight && !matchTopLeft {
+				continue
+			}
+
+			utils.Log("Found X of \"MAS\" going MAS at: ", x, y)
+			numberOfMasAsX++
+
 		}
 	}
-	fmt.Println("Total XMAS: ", numberOfX_mas_s)
 
+	// 1858
+	return numberOfMasAsX
 }
 
 func getColumns(rows []string) []string {
