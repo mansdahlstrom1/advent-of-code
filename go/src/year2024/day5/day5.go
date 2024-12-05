@@ -21,7 +21,6 @@ func part1(pageOrderingRules [][2]int, updates [][]int) int {
 		utils.Log("pagesToUpdate: ", pagesToUpdate)
 
 		var validUpdate = checkPagesToUpdate(pageOrderingRules, pagesToUpdate)
-		utils.Log("Is valid update:", validUpdate, pagesToUpdate)
 		if validUpdate {
 			middleIndex := len(pagesToUpdate) / 2
 			sum += pagesToUpdate[middleIndex]
@@ -32,7 +31,7 @@ func part1(pageOrderingRules [][2]int, updates [][]int) int {
 }
 
 func isPageBehind(pagesToUpdate []int, pageIndex int, pageThatCannotBeBefore int) bool {
-	for i := pageIndex; i > 0; i-- {
+	for i := pageIndex; i >= 0; i-- {
 		if pagesToUpdate[i] == pageThatCannotBeBefore {
 			utils.Log("Found page that cannot be before...", pageThatCannotBeBefore, "Exiting")
 			return true
