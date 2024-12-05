@@ -9,15 +9,52 @@ import (
 
 func Day5() {
 	fmt.Println("Day 5")
-	pageOrderingRules, updates := parseInput("example.txt")
+	pageOrderingRules, updates := parseInput("input.txt")
 
-	for _, rule := range pageOrderingRules {
-		utils.Log("Rule: ", rule)
+	sum := part1(pageOrderingRules, updates)
+	fmt.Println("Part 1 example.txt: ", sum)
+}
+
+func part1(pageOrderingRules [][2]int, updates [][]int) int {
+	var sum = 0
+	for _, pagesToUpdate := range updates {
+		utils.Log("pagesToUpdate: ", pagesToUpdate)
+
+		var validUpdate = checkPagesToUpdate(pageOrderingRules, pagesToUpdate)
+		utils.Log("Is valid update:", validUpdate, pagesToUpdate)
+		if validUpdate {
+			middleIndex := len(pagesToUpdate) / 2
+			sum += pagesToUpdate[middleIndex]
+		}
 	}
 
-	for _, update := range updates {
-		utils.Log("Update: ", update)
+	return sum
+}
+
+func isPageBehind(pagesToUpdate []int, pageIndex int, pageThatCannotBeBefore int) bool {
+	for i := pageIndex; i > 0; i-- {
+		if pagesToUpdate[i] == pageThatCannotBeBefore {
+			utils.Log("Found page that cannot be before...", pageThatCannotBeBefore, "Exiting")
+			return true
+		}
 	}
+	return false
+}
+
+func checkPagesToUpdate(pageOrderingRules [][2]int, pagesToUpdate []int) bool {
+	for pageIndex, pageNumber := range pagesToUpdate {
+		utils.Log("Page number: ", pageNumber)
+		for _, rule := range pageOrderingRules {
+			if rule[0] == pageNumber {
+				pageThatCannotBeBefore := rule[1]
+				utils.Log("Found page number in rule: ", rule, "as index: ", 0, "checking that", pageThatCannotBeBefore, "is not before")
+				if isPageBehind(pagesToUpdate, pageIndex, pageThatCannotBeBefore) {
+					return false
+				}
+			}
+		}
+	}
+	return true
 }
 
 func parseInput(filename string) ([][2]int, [][]int) {
@@ -45,5 +82,4 @@ func parseInput(filename string) ([][2]int, [][]int) {
 	}
 
 	return pageOrderingRules, updates
-
 }
