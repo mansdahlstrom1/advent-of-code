@@ -14,8 +14,8 @@ func Day6() {
 	pt1 := part1(grid)
 	fmt.Println("Part 1: ", pt1)
 
-	// pt2 := part2(pageOrderingRules, updates)
-	// fmt.Println("Part 2 example.txt: ", pt2)
+	pt2 := part2()
+	fmt.Println("Part 2 example.txt: ", pt2)
 }
 
 func part1(grid []string) int {
@@ -76,7 +76,7 @@ func part1(grid []string) int {
 	for _, row := range gridCopy {
 		utils.Log(string(row))
 		for _, char := range row {
-			if char == 'X' || char == 'O' {
+			if char == 'X' {
 				numSteps++
 			}
 		}
@@ -86,8 +86,6 @@ func part1(grid []string) int {
 }
 
 func part2() int {
-
-	// Add the X as we go, if  we find a X we know we can create a infinite loop
 	utils.Log("Part 2")
 	return 0
 }
