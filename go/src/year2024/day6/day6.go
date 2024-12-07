@@ -9,88 +9,89 @@ import (
 
 func Day6() {
 	fmt.Println("Day 6")
-	grid := parseInput("input.txt")
+	grid := parseInput("example.txt")
 
 	pt1 := part1(grid)
 	fmt.Println("Part 1: ", pt1)
-
-	pt2 := part2()
-	fmt.Println("Part 2 example.txt: ", pt2)
 }
 
-func part1(grid []string) int {
-	gridCopy := make([][]rune, len(grid))
-	for i, row := range grid {
-		gridCopy[i] = []rune(row)
-	}
-
-	if utils.Debug {
-		// Render the map
-		for _, row := range grid {
-			utils.Log(row)
-		}
-	}
-
+func part1(grid [][]rune) (sum int) {
 	startX, startY := findStartPoint(grid)
-	utils.Log("Start point: ", startX, startY)
+	printMap(grid)
+
+	gridCopy := make([][]rune, len(grid))
+	copy(gridCopy, grid)
 
 	var x = startX
 	var y = startY
 	var direction = "up"
-	var maxY = len(grid) - 1
-	var maxX = len(grid[0]) - 1
 
-	for x >= 0 && x <= maxX && y >= 0 && y <= maxY {
-		// Mark where we have been with X
-		gridCopy[y][x] = 'X'
-		var tempX = x
-		var tempY = y
-
-		switch direction {
-		case "up":
-			tempY--
-		case "right":
-			tempX++
-		case "down":
-			tempY++
-		case "left":
-			tempX--
-		}
-
-		if tempX >= 0 && tempX <= maxX && tempY >= 0 && tempY <= maxY {
-			if grid[tempY][tempX] == '#' {
-				// turn if we find an obstacle
-				direction = getNextDirection(direction)
-			} else {
-				// "commit" the move
-				x = tempX
-				y = tempY
-			}
-		} else {
+	for isSafe(grid, x, y) {
+		tempX, tempY := getNextCoordinates(x, y, direction)
+		if !isSafe(grid, tempX, tempY) {
+			gridCopy[y][x] = 'X'
 			utils.Log("Walking out of bounds, breaking")
 			break
 		}
+
+		inFrontOfUs := grid[tempY][tempX]
+		if inFrontOfUs == '#' {
+			// turn if we find an obstacle
+			direction = turnRight(direction)
+			continue
+		}
+
+		// "commit" the move
+		x = tempX
+		y = tempY
+		gridCopy[y][x] = 'X'
+		printMap(gridCopy)
 	}
 
 	var numSteps = 0
 	for _, row := range gridCopy {
-		utils.Log(string(row))
 		for _, char := range row {
-			if char == 'X' {
+			if haveBeenHereBefore(char) {
 				numSteps++
 			}
 		}
 	}
 
+	printMap(gridCopy)
 	return numSteps
 }
 
-func part2() int {
-	utils.Log("Part 2")
-	return 0
+func haveBeenHereBefore(currentStep rune) bool {
+	return currentStep == 'X' || currentStep == '^'
 }
 
-func getNextDirection(direction string) string {
+func printMap(grid [][]rune) {
+	for _, row := range grid {
+		utils.Log(string(row))
+	}
+}
+
+func getNextCoordinates(x, y int, direction string) (nextX int, nextY int) {
+	switch direction {
+	case "up":
+		return x, y - 1
+	case "right":
+		return x + 1, y
+	case "down":
+		return x, y + 1
+	case "left":
+		return x - 1, y
+	}
+	panic("Invalid direction")
+}
+
+func isSafe(grid [][]rune, x, y int) bool {
+	var maxY = len(grid) - 1
+	var maxX = len(grid[0]) - 1
+	return x >= 0 && x <= maxX && y >= 0 && y <= maxY
+}
+
+func turnRight(direction string) string {
 	switch direction {
 	case "up":
 		return "right"
@@ -104,7 +105,7 @@ func getNextDirection(direction string) string {
 	panic("Invalid direction")
 }
 
-func findStartPoint(grid []string) (int, int) {
+func findStartPoint(grid [][]rune) (int, int) {
 	for y, row := range grid {
 		for x, char := range row {
 			if char == '^' {
@@ -115,7 +116,7 @@ func findStartPoint(grid []string) (int, int) {
 	panic("Could not find start point")
 }
 
-func parseInput(filename string) []string {
+func parseInput(filename string) [][]rune {
 	utils.Log("Parsing input")
 	text := utils.ReadFile("year2024", "day6", filename)
 	rows := strings.Split(text, "\n")
@@ -125,5 +126,13 @@ func parseInput(filename string) []string {
 		rows = rows[:len(rows)-1]
 	}
 
-	return rows
+	var output = make([][]rune, len(rows))
+	for i, row := range rows {
+		output[i] = make([]rune, len(row))
+		for j, char := range row {
+			output[i][j] = char
+		}
+	}
+
+	return output
 }
