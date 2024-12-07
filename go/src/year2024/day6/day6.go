@@ -9,16 +9,19 @@ import (
 
 func Day6() {
 	fmt.Println("Day 6")
-	grid := parseInput("input.txt")
+	grid := parseInput("edge-case.txt")
 
 	pt1 := part1(grid)
 	fmt.Println("Part 1: ", pt1)
+
+	pt2 := part2(grid)
+	fmt.Println("Part 2: ", pt2)
 }
 
 func part1(grid [][]rune) (sum int) {
 	printMap(grid)
 	startX, startY := findStartPoint(grid)
-	gridCopy := traverseMap(startX, startY, "up", grid)
+	gridCopy, _ := traverseMap(startX, startY, Up, grid, false)
 
 	var numSteps = 0
 	for _, row := range gridCopy {
@@ -33,37 +36,93 @@ func part1(grid [][]rune) (sum int) {
 	return numSteps
 }
 
-func traverseMap(startX int, startY int, initialDirection string, grid [][]rune) [][]rune {
-	gridCopy := make([][]rune, len(grid))
-	copy(gridCopy, grid)
+func part2(grid [][]rune) int {
+	// printMap(grid)
+	startX, startY := findStartPoint(grid)
+	traverseMap(startX, startY, Up, grid, true)
+
+	return 0
+}
+
+func traverseMap(startX int, startY int, initialDirection Direction, grid [][]rune, shouldLookForInfinites bool) (updatedMap [][]rune, state string) {
+	gridCopy := deepCopy(grid)
+	utils.Log("Traversing map", startX, startY, initialDirection)
+	// printMap(gridCopy)
 
 	var x = startX
 	var y = startY
 	var direction = initialDirection
+	var numberOfInfinites = 0
+	var pointsMap = make(map[string]Point)
 
 	for isSafe(grid, x, y) {
-		tempX, tempY := getNextCoordinates(x, y, direction)
-		if !isSafe(grid, tempX, tempY) {
+		nextPoint := getNextCoordinates(x, y, direction)
+		if !isSafe(grid, nextPoint.x, nextPoint.y) {
 			gridCopy[y][x] = 'X'
 			utils.Log("Walking out of bounds, breaking")
 			break
 		}
 
-		inFrontOfUs := grid[tempY][tempX]
-		if inFrontOfUs == '#' {
+		inFrontOfUs := grid[nextPoint.y][nextPoint.x]
+		if inFrontOfUs == '#' || inFrontOfUs == 'O' {
 			// turn right if we find an obstacle
 			direction = turnRight(direction)
-			continue
-		}
 
-		// "commit" the move
-		x = tempX
-		y = tempY
-		gridCopy[y][x] = 'X'
-		printMap(gridCopy)
+			// Take note of point
+			currentPoint := Point{x, y, direction}
+			key := pointKey(currentPoint)
+
+			_, exists := pointsMap[key]
+			if exists {
+				// we have turned right at this point before....
+				utils.Log("Found infinite loop at", x, y, direction)
+				// printMap(gridCopy)
+				return gridCopy, "infinite-loop"
+			}
+
+			pointsMap[key] = currentPoint
+		} else {
+			// "commit" the move
+			x = nextPoint.x
+			y = nextPoint.y
+			gridCopy[y][x] = 'X'
+
+			if shouldLookForInfinites {
+				// Make a new copy of the map
+				newMap := deepCopy(grid)
+				nextPoint = getNextCoordinates(x, y, direction)
+				if isSafe(newMap, nextPoint.x, nextPoint.y) {
+
+					// Edge case cannot place a obstacle in front of us
+					inFrontOfUs = newMap[nextPoint.y][nextPoint.x]
+					if inFrontOfUs == '^' {
+						utils.Log("Found start point, skipping, cannot place obstacle here... the guard would notice that ")
+						continue
+					}
+
+					// If next point is a wall there is no point in checking this
+					if inFrontOfUs == '#' {
+						utils.Log("Found wall, skipping")
+						continue
+					}
+
+					// add a new obstacle in front of us and turn right
+					newMap[nextPoint.y][nextPoint.x] = 'O'
+					newDirection := turnRight(direction)
+
+					_, state = traverseMap(x, y, newDirection, newMap, false)
+					if state == "infinite-loop" {
+						numberOfInfinites++
+					}
+				}
+			}
+		}
 	}
 
-	return gridCopy
+	if shouldLookForInfinites {
+		utils.Log("Done traversing, numberOfInfinites:", numberOfInfinites)
+	}
+	return gridCopy, "out-of-bounds"
 }
 
 func haveBeenHereBefore(currentStep rune) bool {
@@ -82,30 +141,30 @@ func isSafe(grid [][]rune, x, y int) bool {
 	return x >= 0 && x <= maxX && y >= 0 && y <= maxY
 }
 
-func getNextCoordinates(x, y int, direction string) (nextX int, nextY int) {
+func getNextCoordinates(x, y int, direction Direction) Point {
 	switch direction {
-	case "up":
-		return x, y - 1
-	case "right":
-		return x + 1, y
-	case "down":
-		return x, y + 1
-	case "left":
-		return x - 1, y
+	case Up:
+		return Point{x, y - 1, Up}
+	case Right:
+		return Point{x + 1, y, Right}
+	case Down:
+		return Point{x, y + 1, Down}
+	case Left:
+		return Point{x - 1, y, Left}
 	}
 	panic("Invalid direction")
 }
 
-func turnRight(direction string) string {
+func turnRight(direction Direction) Direction {
 	switch direction {
-	case "up":
-		return "right"
-	case "right":
-		return "down"
-	case "down":
-		return "left"
-	case "left":
-		return "up"
+	case Up:
+		return Right
+	case Right:
+		return Down
+	case Down:
+		return Left
+	case Left:
+		return Up
 	}
 	panic("Invalid direction")
 }
@@ -119,6 +178,16 @@ func findStartPoint(grid [][]rune) (int, int) {
 		}
 	}
 	panic("Could not find start point")
+}
+
+func deepCopy(grid [][]rune) [][]rune {
+	gridCopy := make([][]rune, len(grid))
+	for i := range grid {
+		gridCopy[i] = make([]rune, len(grid[i]))
+		copy(gridCopy[i], grid[i]) // Copy the inner slice
+	}
+
+	return gridCopy
 }
 
 func parseInput(filename string) [][]rune {
