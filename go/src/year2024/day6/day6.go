@@ -9,44 +9,16 @@ import (
 
 func Day6() {
 	fmt.Println("Day 6")
-	grid := parseInput("example.txt")
+	grid := parseInput("input.txt")
 
 	pt1 := part1(grid)
 	fmt.Println("Part 1: ", pt1)
 }
 
 func part1(grid [][]rune) (sum int) {
-	startX, startY := findStartPoint(grid)
 	printMap(grid)
-
-	gridCopy := make([][]rune, len(grid))
-	copy(gridCopy, grid)
-
-	var x = startX
-	var y = startY
-	var direction = "up"
-
-	for isSafe(grid, x, y) {
-		tempX, tempY := getNextCoordinates(x, y, direction)
-		if !isSafe(grid, tempX, tempY) {
-			gridCopy[y][x] = 'X'
-			utils.Log("Walking out of bounds, breaking")
-			break
-		}
-
-		inFrontOfUs := grid[tempY][tempX]
-		if inFrontOfUs == '#' {
-			// turn if we find an obstacle
-			direction = turnRight(direction)
-			continue
-		}
-
-		// "commit" the move
-		x = tempX
-		y = tempY
-		gridCopy[y][x] = 'X'
-		printMap(gridCopy)
-	}
+	startX, startY := findStartPoint(grid)
+	gridCopy := traverseMap(startX, startY, "up", grid)
 
 	var numSteps = 0
 	for _, row := range gridCopy {
@@ -61,6 +33,39 @@ func part1(grid [][]rune) (sum int) {
 	return numSteps
 }
 
+func traverseMap(startX int, startY int, initialDirection string, grid [][]rune) [][]rune {
+	gridCopy := make([][]rune, len(grid))
+	copy(gridCopy, grid)
+
+	var x = startX
+	var y = startY
+	var direction = initialDirection
+
+	for isSafe(grid, x, y) {
+		tempX, tempY := getNextCoordinates(x, y, direction)
+		if !isSafe(grid, tempX, tempY) {
+			gridCopy[y][x] = 'X'
+			utils.Log("Walking out of bounds, breaking")
+			break
+		}
+
+		inFrontOfUs := grid[tempY][tempX]
+		if inFrontOfUs == '#' {
+			// turn right if we find an obstacle
+			direction = turnRight(direction)
+			continue
+		}
+
+		// "commit" the move
+		x = tempX
+		y = tempY
+		gridCopy[y][x] = 'X'
+		printMap(gridCopy)
+	}
+
+	return gridCopy
+}
+
 func haveBeenHereBefore(currentStep rune) bool {
 	return currentStep == 'X' || currentStep == '^'
 }
@@ -69,6 +74,12 @@ func printMap(grid [][]rune) {
 	for _, row := range grid {
 		utils.Log(string(row))
 	}
+}
+
+func isSafe(grid [][]rune, x, y int) bool {
+	var maxY = len(grid) - 1
+	var maxX = len(grid[0]) - 1
+	return x >= 0 && x <= maxX && y >= 0 && y <= maxY
 }
 
 func getNextCoordinates(x, y int, direction string) (nextX int, nextY int) {
@@ -83,12 +94,6 @@ func getNextCoordinates(x, y int, direction string) (nextX int, nextY int) {
 		return x - 1, y
 	}
 	panic("Invalid direction")
-}
-
-func isSafe(grid [][]rune, x, y int) bool {
-	var maxY = len(grid) - 1
-	var maxX = len(grid[0]) - 1
-	return x >= 0 && x <= maxX && y >= 0 && y <= maxY
 }
 
 func turnRight(direction string) string {
