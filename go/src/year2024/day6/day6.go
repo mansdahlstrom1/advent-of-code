@@ -9,7 +9,7 @@ import (
 
 func Day6() {
 	fmt.Println("Day 6")
-	grid := parseInput("edge-case.txt")
+	grid := parseInput("input.txt")
 
 	pt1 := part1(grid)
 	fmt.Println("Part 1: ", pt1)
@@ -21,7 +21,7 @@ func Day6() {
 func part1(grid [][]rune) (sum int) {
 	printMap(grid)
 	startX, startY := findStartPoint(grid)
-	gridCopy, _ := traverseMap(startX, startY, Up, grid, false)
+	gridCopy, _, _ := traverseMap(startX, startY, Up, grid, false)
 
 	var numSteps = 0
 	for _, row := range gridCopy {
@@ -37,17 +37,17 @@ func part1(grid [][]rune) (sum int) {
 }
 
 func part2(grid [][]rune) int {
-	// printMap(grid)
+	printMap(grid)
 	startX, startY := findStartPoint(grid)
-	traverseMap(startX, startY, Up, grid, true)
+	_, _, numberOfInfinites := traverseMap(startX, startY, Up, grid, true)
 
-	return 0
+	return numberOfInfinites
 }
 
-func traverseMap(startX int, startY int, initialDirection Direction, grid [][]rune, shouldLookForInfinites bool) (updatedMap [][]rune, state string) {
+func traverseMap(startX int, startY int, initialDirection Direction, grid [][]rune, shouldLookForInfinites bool) (updatedMap [][]rune, state string, number int) {
 	gridCopy := deepCopy(grid)
 	utils.Log("Traversing map", startX, startY, initialDirection)
-	// printMap(gridCopy)
+	printMap(gridCopy)
 
 	var x = startX
 	var y = startY
@@ -71,13 +71,11 @@ func traverseMap(startX int, startY int, initialDirection Direction, grid [][]ru
 			// Take note of point
 			currentPoint := Point{x, y, direction}
 			key := pointKey(currentPoint)
-
-			_, exists := pointsMap[key]
-			if exists {
+			if _, exists := pointsMap[key]; exists {
 				// we have turned right at this point before....
 				utils.Log("Found infinite loop at", x, y, direction)
-				// printMap(gridCopy)
-				return gridCopy, "infinite-loop"
+				printMap(gridCopy)
+				return gridCopy, "infinite-loop", numberOfInfinites
 			}
 
 			pointsMap[key] = currentPoint
@@ -85,11 +83,14 @@ func traverseMap(startX int, startY int, initialDirection Direction, grid [][]ru
 			// "commit" the move
 			x = nextPoint.x
 			y = nextPoint.y
-			gridCopy[y][x] = 'X'
+			// don't overwrite the start point
+			if gridCopy[y][x] != '^' {
+				gridCopy[y][x] = 'X'
+			}
 
 			if shouldLookForInfinites {
 				// Make a new copy of the map
-				newMap := deepCopy(grid)
+				newMap := deepCopy(gridCopy)
 				nextPoint = getNextCoordinates(x, y, direction)
 				if isSafe(newMap, nextPoint.x, nextPoint.y) {
 
@@ -106,11 +107,16 @@ func traverseMap(startX int, startY int, initialDirection Direction, grid [][]ru
 						continue
 					}
 
+					if inFrontOfUs == 'X' {
+						utils.Log("We've been here already, cannot place obstacle here... ")
+						continue
+					}
+
 					// add a new obstacle in front of us and turn right
 					newMap[nextPoint.y][nextPoint.x] = 'O'
 					newDirection := turnRight(direction)
 
-					_, state = traverseMap(x, y, newDirection, newMap, false)
+					_, state, _ = traverseMap(x, y, newDirection, newMap, false)
 					if state == "infinite-loop" {
 						numberOfInfinites++
 					}
@@ -119,10 +125,7 @@ func traverseMap(startX int, startY int, initialDirection Direction, grid [][]ru
 		}
 	}
 
-	if shouldLookForInfinites {
-		utils.Log("Done traversing, numberOfInfinites:", numberOfInfinites)
-	}
-	return gridCopy, "out-of-bounds"
+	return gridCopy, "out-of-bounds", numberOfInfinites
 }
 
 func haveBeenHereBefore(currentStep rune) bool {
